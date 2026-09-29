@@ -3,12 +3,13 @@ import { and, desc, eq, like, type SQL } from "drizzle-orm";
 import { db, schema } from "@/db";
 import { adminRoute, jsonError } from "@/lib/api";
 import { plainText, safeUrl } from "@/lib/sanitize";
-import { blobEnabled } from "@/lib/storage";
+import { blobClientUploadsEnabled } from "@/lib/storage";
 import { slugify } from "@/lib/utils";
 
 export const GET = adminRoute(async (req) => {
   const url = new URL(req.url);
-  if (url.searchParams.get("meta") === "1") return NextResponse.json({ ok: true, blob: blobEnabled() });
+  // `blob` here means "browser-direct uploads available" (used for large videos).
+  if (url.searchParams.get("meta") === "1") return NextResponse.json({ ok: true, blob: blobClientUploadsEnabled() });
   const q = url.searchParams.get("q")?.slice(0, 100);
   const kind = url.searchParams.get("kind");
   const category = url.searchParams.get("category");
@@ -23,7 +24,7 @@ export const GET = adminRoute(async (req) => {
     .orderBy(desc(schema.mediaAssets.featured), desc(schema.mediaAssets.createdAt))
     .limit(1000);
   const categories = await db.selectDistinct({ c: schema.mediaAssets.category }).from(schema.mediaAssets);
-  return NextResponse.json({ ok: true, rows, categories: categories.map((c) => c.c).filter(Boolean), blob: blobEnabled() });
+  return NextResponse.json({ ok: true, rows, categories: categories.map((c) => c.c).filter(Boolean), blob: blobClientUploadsEnabled() });
 });
 
 /** Registers an asset that is already hosted (Blob client upload, or an external URL). */

@@ -8,7 +8,13 @@ import { slugify } from "./utils";
 
 export const LOCAL_UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
+/** Vercel Blob is connected — via a read-write token, or a store ID (OIDC auth on Vercel). */
 export function blobEnabled() {
+  return Boolean(process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID);
+}
+
+/** Browser-direct uploads (large videos) need a read-write token to sign upload URLs. */
+export function blobClientUploadsEnabled() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 }
 
@@ -74,6 +80,12 @@ export async function saveUpload(file: File, folder = "media"): Promise<StoredFi
 
   if (VIDEO_TYPES.includes(file.type) || /\.(mp4|webm)$/i.test(file.name)) {
     if (buffer.length > MAX_VIDEO_BYTES) throw new HttpError(413, "Videos must be under 200MB.");
+    if (process.env.VERCEL && buffer.length > 4.4 * 1024 * 1024) {
+      throw new HttpError(
+        413,
+        "This video is too large to upload through the server. Add BLOB_READ_WRITE_TOKEN in Vercel to enable large uploads, or paste a YouTube/Vimeo link instead.",
+      );
+    }
     const isMp4 = looksLikeMp4(buffer);
     if (!isMp4 && !looksLikeWebm(buffer)) throw new HttpError(415, "Only MP4 or WebM videos are supported.");
     const ext = isMp4 ? "mp4" : "webm";
