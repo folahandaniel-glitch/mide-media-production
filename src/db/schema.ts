@@ -278,6 +278,28 @@ export const announcements = sqliteTable("announcements", {
   createdAt: createdAt(),
 });
 
+/** Work assigned by a Super Admin to an administrator. */
+export const adminTasks = sqliteTable(
+  "admin_tasks",
+  {
+    id: id(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    assigneeId: text("assignee_id").references(() => adminUsers.id, { onDelete: "set null" }),
+    createdById: text("created_by_id").references(() => adminUsers.id, { onDelete: "set null" }),
+    priority: text("priority", { enum: ["low", "normal", "high", "urgent"] }).notNull().default("normal"),
+    status: text("status", { enum: ["todo", "in_progress", "review", "done"] }).notNull().default("todo"),
+    dueDate: text("due_date").notNull().default(""),
+    link: text("link").notNull().default(""),
+    notes: text("notes").notNull().default(""),
+    completedAt: integer("completed_at", { mode: "timestamp_ms" }),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("tasks_assignee_idx").on(t.assigneeId), index("tasks_status_idx").on(t.status)],
+);
+
+export type AdminTask = typeof adminTasks.$inferSelect;
 export type Section = typeof sections.$inferSelect;
 export type HeroSlide = typeof heroSlides.$inferSelect;
 export type Service = typeof services.$inferSelect;

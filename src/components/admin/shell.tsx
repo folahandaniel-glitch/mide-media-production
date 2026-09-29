@@ -17,6 +17,8 @@ import {
   KeyRound,
   LayoutDashboard,
   LayoutTemplate,
+  ListChecks,
+  Palette,
   LogOut,
   Megaphone,
   Menu,
@@ -45,11 +47,13 @@ export function AdminShell({
   session,
   counts,
   introId,
+  logoUrl,
 }: {
   children: React.ReactNode;
   session: { name: string; email: string; role: "super_admin" | "editor" };
-  counts: { pendingTestimonials: number; unreadEnquiries: number };
+  counts: { pendingTestimonials: number; unreadEnquiries: number; myOpenTasks: number };
   introId: string | null;
+  logoUrl: string;
 }) {
   const pathname = usePathname();
   const search = useSearchParams();
@@ -61,7 +65,13 @@ export function AdminShell({
   const setOpen = (v: boolean) => setOpenOn(v ? location : null);
 
   const groups: { title: string; items: NavItem[] }[] = [
-    { title: "Overview", items: [{ label: "Dashboard", href: "/admin", icon: LayoutDashboard }] },
+    {
+      title: "Overview",
+      items: [
+        { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+        { label: session.role === "super_admin" ? "Tasks" : "My Tasks", href: "/admin/tasks", icon: ListChecks, badge: counts.myOpenTasks },
+      ],
+    },
     {
       title: "Website",
       items: [
@@ -104,11 +114,12 @@ export function AdminShell({
       title: "Settings",
       items: [
         { label: "Website Settings", href: "/admin/settings", icon: Settings, superOnly: true },
+        { label: "Logo & Branding", href: "/admin/settings?tab=general", icon: Palette, superOnly: true },
         { label: "WhatsApp Settings", href: "/admin/settings?tab=whatsapp", icon: WhatsAppIcon as NavItem["icon"], superOnly: true },
         { label: "SEO Settings", href: "/admin/settings?tab=seo", icon: Search, superOnly: true },
         { label: "Analytics", href: "/admin/settings?tab=analytics", icon: BarChart3, superOnly: true },
         { label: "Social Links", href: "/admin/r/social", icon: Share2 },
-        { label: "Users", href: "/admin/users", icon: UserCog, superOnly: true },
+        { label: "Admins & Users", href: "/admin/users", icon: UserCog, superOnly: true },
         { label: "Admin Security", href: "/admin/security", icon: KeyRound },
       ],
     },
@@ -133,12 +144,14 @@ export function AdminShell({
 
   const sidebar = (
     <nav aria-label="Admin" className="flex h-full flex-col">
-      <Link href="/admin" className="flex items-center gap-3 px-5 py-5">
-        <ApertureMark className="h-9 w-9 text-white" />
-        <span className="leading-tight">
-          <span className="block font-display text-sm font-bold tracking-[0.14em] text-white">MIDE MEDIA</span>
-          <span className="block font-display text-[0.6rem] tracking-[0.35em] text-brand">BACKEND</span>
-        </span>
+      <Link href="/admin" className="flex items-center gap-3 px-5 py-5" aria-label="Dashboard">
+        {logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element -- admin-supplied logo
+          <img src={logoUrl} alt="MIDE MEDIA PRODUCTION" className="h-11 w-auto object-contain" />
+        ) : (
+          <ApertureMark className="h-9 w-9 text-white" />
+        )}
+        <span className="font-display text-[0.6rem] font-semibold tracking-[0.35em] text-brand">BACKEND</span>
       </Link>
       <div className="no-scrollbar flex-1 overflow-y-auto px-3 pb-6">
         {groups.map((g) => {
@@ -210,7 +223,7 @@ export function AdminShell({
             </a>
             <div className="ml-2 hidden text-right sm:block">
               <p className="text-xs font-medium text-white">{session.name || "Administrator"}</p>
-              <p className="text-[0.65rem] text-white/45">{session.role === "super_admin" ? "Super Admin" : "Editor"}</p>
+              <p className="text-[0.65rem] text-white/45">{session.role === "super_admin" ? "Super Admin" : "Admin"}</p>
             </div>
             <button type="button" onClick={logout} className="adm-icon-btn" aria-label="Sign out" title="Sign out">
               <LogOut className="h-4 w-4" />

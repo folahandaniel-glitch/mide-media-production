@@ -7,6 +7,7 @@ import { getSession } from "@/lib/auth";
 import { getAllSettings } from "@/lib/settings";
 import { formatDate } from "@/lib/utils";
 import { PlaceholderBanner } from "@/components/admin/placeholder-banner";
+import { listTasks } from "@/lib/tasks";
 
 async function count(table: SQLiteTable, where?: SQL) {
   const [r] = await db.select({ n: sql<number>`count(*)` }).from(table).where(where);
@@ -28,6 +29,12 @@ export default async function Dashboard() {
     count(schema.teamMembers, eq(schema.teamMembers.isPlaceholder, true)),
     getAllSettings(),
   ]);
+  const [myTasks, teamTasks] = await Promise.all([
+    session ? listTasks(session, { open: true, assigneeId: session.id }).then((r) => r.filter((t) => t.assigneeId === session.id)) : [],
+    session?.role === "super_admin" ? listTasks(session, { open: true }) : Promise.resolve([]),
+  ]);
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const overdueTeam = teamTasks.filter((t) => t.dueDate && t.dueDate < todayStr).length;
   const [recentEnquiries, recentFeedback, recentProjects] = await Promise.all([
     db.select().from(schema.enquiries).orderBy(desc(schema.enquiries.createdAt)).limit(5),
     db.select().from(schema.testimonials).orderBy(desc(schema.testimonials.createdAt)).limit(5),
@@ -96,7 +103,48 @@ export default async function Dashboard() {
         )}
       </div>
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-3">
+      <section className="mt-8 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#111113]" aria-label="My tasks">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.08] px-5 py-4">
+          <h2 className="text-sm font-semibold text-white">
+            My tasks <span className="ml-1 text-white/45">({myTasks.length} open)</span>
+          </h2>
+          <div className="flex items-center gap-3 text-xs">
+            {session?.role === "super_admin" && (
+              <span className="text-white/55">
+                Team: {teamTasks.length} open{overdueTeam > 0 && <span className="text-red-400"> · {overdueTeam} overdue</span>}
+              </span>
+            )}
+            <Link href="/admin/tasks" className="text-brand hover:underline">
+              {session?.role === "super_admin" ? "Manage tasks" : "View all"}
+            </Link>
+          </div>
+        </div>
+        {myTasks.length ? (
+          <ul className="divide-y divide-white/[0.05]">
+            {myTasks.slice(0, 5).map((t) => (
+              <li key={t.id}>
+                <Link href="/admin/tasks" className="flex items-center justify-between gap-3 px-5 py-3.5 hover:bg-white/[0.03]">
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-medium text-white">{t.title}</span>
+                    <span className="block text-xs text-white/45 capitalize">
+                      {t.status.replace("_", " ")} · {t.priority} priority
+                    </span>
+                  </span>
+                  {t.dueDate && (
+                    <span className={`shrink-0 text-xs ${t.dueDate < todayStr ? "font-semibold text-red-400" : "text-white/45"}`}>
+                      {t.dueDate < todayStr ? "Overdue" : "Due"} {formatDate(t.dueDate)}
+                    </span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Empty text="No open tasks assigned to you." />
+        )}
+      </section>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-3">
         <Panel title="Recent enquiries" href="/admin/enquiries">
           {recentEnquiries.length ? (
             recentEnquiries.map((e) => (

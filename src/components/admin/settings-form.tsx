@@ -24,7 +24,7 @@ const TABS: Tab[] = [
     fields: [
       f("site", "companyName", "Company name", "text", { half: true }),
       f("site", "tagline", "Business category / tagline", "text", { half: true }),
-      f("site", "logo", "Logo", "image", { help: "Upload the official MIDE MEDIA PRODUCTION logo (transparent PNG or SVG recommended). Leave empty to use the built-in wordmark." }),
+      f("site", "logo", "Logo", "image", { help: "Click “Upload” or “Media library” to replace the logo. Use a transparent PNG, WEBP or SVG with light/white artwork — the website has a dark background. Then click “Save general settings” below." }),
       f("site", "logoAlt", "Logo alt text", "text", { half: true }),
       f("site", "favicon", "Favicon", "image", { help: "Square PNG/SVG, at least 512×512." }),
       f("site", "phone", "Phone", "text", { half: true }),

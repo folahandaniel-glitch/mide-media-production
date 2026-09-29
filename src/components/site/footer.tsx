@@ -41,7 +41,7 @@ export function Footer({ chrome }: { chrome: SiteChrome }) {
 
       <div className="container-cinema relative grid gap-12 py-16 md:grid-cols-2 lg:grid-cols-12">
         <div className="lg:col-span-5">
-          <Logo logoUrl={site.logo} alt={site.logoAlt} />
+          <Logo logoUrl={site.logo} alt={site.logoAlt} className={site.logo ? "h-20 md:h-24" : undefined} />
           <p className="mt-2 font-display text-xs tracking-[0.3em] text-white/50 uppercase">{site.tagline}</p>
           <p className="mt-6 max-w-md text-sm leading-relaxed text-white/60">{site.footerText}</p>
           {social.length > 0 && (

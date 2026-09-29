@@ -8,7 +8,7 @@ export const defaultSettings = {
   site: {
     companyName: "MIDE MEDIA PRODUCTION",
     tagline: "Cinematography and Media Production",
-    logo: "",
+    logo: "/brand/logo.webp",
     logoAlt: "MIDE MEDIA PRODUCTION logo",
     favicon: "",
     phone: "+234 706 296 1288",
@@ -53,7 +53,7 @@ export const defaultSettings = {
     ogTitle: "MIDE MEDIA PRODUCTION — Cinematic Stories. Powerful Visuals.",
     ogDescription:
       "Professional cinematography and media production for weddings, events, brands, churches, organisations and creators across Nigeria.",
-    ogImage: "",
+    ogImage: "/brand/og.jpg",
     canonicalUrl: "",
     robotsIndex: true,
   },

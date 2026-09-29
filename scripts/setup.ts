@@ -58,7 +58,46 @@ async function main() {
       console.warn("! No admin exists yet. Set ADMIN_EMAIL and ADMIN_PASSWORD to create the first Super Admin.");
     }
   }
+  await applyContentMigrations(db);
   client.close();
+}
+
+/**
+ * One-time content updates for existing databases. Each runs once (tracked in
+ * settings["__migrations"]) so later edits made in the backend are never overwritten.
+ */
+async function applyContentMigrations(db: ReturnType<typeof drizzle<typeof schema>>) {
+  const read = async (key: string) => {
+    const [row] = await db.select().from(schema.settings).where(sql`${schema.settings.key} = ${key}`);
+    try {
+      return row ? (JSON.parse(row.value) as Record<string, unknown>) : null;
+    } catch {
+      return null;
+    }
+  };
+  const write = async (key: string, value: unknown) => {
+    await db
+      .insert(schema.settings)
+      .values({ key, value: JSON.stringify(value) })
+      .onConflictDoUpdate({ target: schema.settings.key, set: { value: JSON.stringify(value) } });
+  };
+
+  const done = ((await read("__migrations")) as { applied?: string[] } | null)?.applied ?? [];
+  const run = async (name: string, fn: () => Promise<void>) => {
+    if (done.includes(name)) return;
+    await fn();
+    done.push(name);
+    await write("__migrations", { applied: done });
+    console.log(`✓ Content update applied: ${name}`);
+  };
+
+  // Official MIDE MEDIA PRODUCTION logo + share image (only fills empty values).
+  await run("2026-09-brand-logo", async () => {
+    const site = await read("site");
+    if (site && !site.logo) await write("site", { ...site, logo: "/brand/logo.webp" });
+    const seo = await read("seo");
+    if (seo && !seo.ogImage) await write("seo", { ...seo, ogImage: "/brand/og.jpg" });
+  });
 }
 
 main().catch((err) => {

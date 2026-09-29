@@ -1,7 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { KeyRound, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { KeyRound, ListPlus, Plus, Trash2 } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "@/components/ui/toast";
 import { formatDate } from "@/lib/utils";
@@ -87,11 +88,11 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
   return (
     <div>
       <PageHeader
-        title="Users"
-        description="Super Admins can manage everything. Editors can manage content but not settings or users."
+        title="Admins & Users"
+        description="Super Admins can manage everything, add admins and assign them tasks. Admins manage website content and work on the tasks assigned to them, but cannot change settings or users."
         actions={
           <button type="button" className="adm-btn adm-btn-primary" onClick={() => setAdding(true)}>
-            <Plus className="h-4 w-4" /> Add administrator
+            <Plus className="h-4 w-4" /> Add admin
           </button>
         }
       />
@@ -127,7 +128,7 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
                         onChange={(e) => patch(u, { role: e.target.value }, "Role updated.")}
                       >
                         <option value="super_admin">Super Admin</option>
-                        <option value="editor">Editor</option>
+                        <option value="editor">Admin</option>
                       </select>
                     </td>
                     <td className="px-4 py-3 text-white/60">{u.lastLoginAt ? formatDate(u.lastLoginAt) : "Never"}</td>
@@ -136,6 +137,11 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
+                        {u.active && (
+                          <Link href={`/admin/tasks?new=1&assignee=${u.id}`} className="adm-btn adm-btn-sm" title="Assign a task">
+                            <ListPlus className="h-3.5 w-3.5" /> Assign task
+                          </Link>
+                        )}
                         <button type="button" className="adm-icon-btn" onClick={() => setResetFor(u)} aria-label={`Reset password for ${u.email}`} title="Reset password">
                           <KeyRound className="h-4 w-4" />
                         </button>
@@ -172,7 +178,7 @@ export function UsersManager({ currentUserId }: { currentUserId: string }) {
           <div>
             <label className="field-label" htmlFor="u-role">Role</label>
             <select id="u-role" name="role" className="field" defaultValue="editor">
-              <option value="editor">Editor — content only</option>
+              <option value="editor">Admin — manages content &amp; assigned tasks</option>
               <option value="super_admin">Super Admin — full access</option>
             </select>
           </div>

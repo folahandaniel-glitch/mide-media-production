@@ -29,7 +29,7 @@ export function Logo({
   if (logoUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- admin-supplied logo of unknown aspect ratio/format
-      <img src={logoUrl} alt={alt} className={cn("h-11 w-auto object-contain md:h-12", className)} />
+      <img src={logoUrl} alt={alt} className={cn("h-14 w-auto object-contain md:h-16", className)} />
     );
   }
   return (
