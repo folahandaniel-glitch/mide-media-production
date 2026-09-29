@@ -1,0 +1,51 @@
+{
+    "name":  "mide-media-production",
+    "version":  "0.1.0",
+    "private":  true,
+    "scripts":  {
+                    "dev":  "tsx scripts/setup.ts \u0026\u0026 next dev",
+                    "build":  "tsx scripts/setup.ts \u0026\u0026 next build",
+                    "start":  "next start",
+                    "lint":  "eslint",
+                    "typecheck":  "tsc --noEmit",
+                    "db:generate":  "drizzle-kit generate",
+                    "db:setup":  "tsx scripts/setup.ts",
+                    "db:studio":  "drizzle-kit studio"
+                },
+    "dependencies":  {
+                         "@libsql/client":  "^0.18.0",
+                         "@tiptap/extension-link":  "^3.31.3",
+                         "@tiptap/extension-text-align":  "^3.31.3",
+                         "@tiptap/pm":  "^3.31.3",
+                         "@tiptap/react":  "^3.31.3",
+                         "@tiptap/starter-kit":  "^3.31.3",
+                         "@vercel/blob":  "^2.8.0",
+                         "bcryptjs":  "^3.0.3",
+                         "drizzle-orm":  "^0.45.3",
+                         "jose":  "^6.2.12",
+                         "lucide-react":  "^1.48.0",
+                         "next":  "^16.3.7",
+                         "react":  "^19.2.8",
+                         "react-dom":  "^19.2.8",
+                         "sanitize-html":  "^2.17.7",
+                         "server-only":  "^0.0.1",
+                         "sharp":  "^0.35.5",
+                         "zod":  "^4.6.5"
+                     },
+    "devDependencies":  {
+                            "@tailwindcss/postcss":  "^4",
+                            "@types/node":  "^20",
+                            "@types/react":  "^19",
+                            "@types/react-dom":  "^19",
+                            "@types/sanitize-html":  "^2.16.2",
+                            "drizzle-kit":  "^0.31.11",
+                            "eslint":  "^9",
+                            "eslint-config-next":  "16.3.7",
+                            "tailwindcss":  "^4",
+                            "tsx":  "^4.23.15",
+                            "typescript":  "^5"
+                        },
+    "engines":  {
+                    "node":  "\u003e=20.12"
+                }
+}
