@@ -5,9 +5,10 @@ import * as schema from "./schema";
 export const LOCAL_DB_URL = "file:./data/local.db";
 
 export function databaseConfig() {
+  // DATABASE_* or the TURSO_* names set by Vercel's Turso integration.
   return {
-    url: process.env.DATABASE_URL || LOCAL_DB_URL,
-    authToken: process.env.DATABASE_AUTH_TOKEN || undefined,
+    url: process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL || LOCAL_DB_URL,
+    authToken: process.env.DATABASE_AUTH_TOKEN || process.env.TURSO_AUTH_TOKEN || undefined,
   };
 }
 

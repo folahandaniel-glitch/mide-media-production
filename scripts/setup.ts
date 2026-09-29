@@ -22,16 +22,18 @@ for (const file of [".env.local", ".env"]) {
 }
 
 async function main() {
-  const url = process.env.DATABASE_URL || "file:./data/local.db";
-  if (process.env.VERCEL && !process.env.DATABASE_URL) {
+  const remoteUrl = process.env.DATABASE_URL || process.env.TURSO_DATABASE_URL;
+  const authToken = process.env.DATABASE_AUTH_TOKEN || process.env.TURSO_AUTH_TOKEN || undefined;
+  const url = remoteUrl || "file:./data/local.db";
+  if (process.env.VERCEL && !remoteUrl) {
     console.error(
-      "\n✖ DATABASE_URL is not set. On Vercel, create a Turso database and set DATABASE_URL and DATABASE_AUTH_TOKEN.\n",
+      "\n✖ No database configured. In Vercel → Storage, connect a Turso database (sets TURSO_DATABASE_URL / TURSO_AUTH_TOKEN),\n  or set DATABASE_URL and DATABASE_AUTH_TOKEN manually, then redeploy.\n",
     );
     process.exit(1);
   }
   if (url.startsWith("file:")) mkdirSync("data", { recursive: true });
 
-  const client = createClient({ url, authToken: process.env.DATABASE_AUTH_TOKEN || undefined });
+  const client = createClient({ url, authToken });
   const db = drizzle(client, { schema });
 
   await migrate(db, { migrationsFolder: "drizzle" });
