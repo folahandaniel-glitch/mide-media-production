@@ -92,6 +92,7 @@ export function HeroCarousel(props: Props) {
   }
 
   const slide = slides[index]!;
+  const framed = slide.layout === "framed" && Boolean(slide.image);
   const primaryExternal = props.primaryUrl && !isInternalHref(props.primaryUrl);
 
   return (
@@ -136,7 +137,7 @@ export function HeroCarousel(props: Props) {
                   preload={i === 0}
                   loading={i === 0 ? "eager" : "lazy"}
                   quality={75}
-                  className="object-cover"
+                  className={cn("object-cover", s.layout === "framed" && "lg:scale-125 lg:opacity-60 lg:blur-3xl")}
                 />
               </div>
             )}
@@ -179,20 +180,39 @@ export function HeroCarousel(props: Props) {
         <span className="absolute right-0 bottom-0 h-8 w-8 border-r border-b border-white/30" />
       </div>
 
+      {/* Framed photo (desktop): keeps portrait / smaller photos crisp over a blurred backdrop */}
+      {framed && (
+        <div className="pointer-events-none absolute top-[calc(50%+1.5rem)] right-[max(2.5rem,calc((100vw-1360px)/2+2.5rem))] hidden -translate-y-1/2 lg:block" aria-hidden="true">
+          <div key={slide.id} className="animate-fade-up">
+            <div className="relative aspect-[3/4] h-[min(62vh,580px)] rotate-[1.5deg] overflow-hidden rounded-[1.75rem] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-white/15">
+              <SmartImage src={slide.image} alt="" fill sizes="460px" quality={85} className="object-cover" />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+              <span className="absolute top-4 left-4 h-6 w-6 border-t-2 border-l-2 border-brand" />
+              <span className="absolute top-4 right-4 h-6 w-6 border-t-2 border-r-2 border-brand" />
+              <span className="absolute bottom-4 left-4 h-6 w-6 border-b-2 border-l-2 border-brand" />
+              <span className="absolute right-4 bottom-4 h-6 w-6 border-r-2 border-b-2 border-brand" />
+              {slide.eyebrow && (
+                <span className="absolute inset-x-6 bottom-6 font-display text-[0.62rem] tracking-[0.3em] text-white/85 uppercase">{slide.eyebrow}</span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Content */}
       <div className="container-cinema relative pb-28 md:pb-32">
-        <div key={slide.id} className="max-w-4xl">
+        <div key={slide.id} className={cn("max-w-4xl", framed && "lg:max-w-[54%]")}>
           {slide.eyebrow && (
             <p className="eyebrow animate-fade-up" style={{ animationDelay: "100ms" }}>
               {slide.eyebrow}
             </p>
           )}
           {index === 0 ? (
-            <h1 className="display-title animate-fade-up mt-6 text-[clamp(2.3rem,min(6.4vw,8.2vh),6.2rem)] text-white" style={{ animationDelay: "200ms" }}>
+            <h1 className={cn("display-title animate-fade-up mt-6 text-white", framed ? "text-[clamp(2.3rem,min(5vw,8.2vh),5rem)]" : "text-[clamp(2.3rem,min(6.4vw,8.2vh),6.2rem)]")} style={{ animationDelay: "200ms" }}>
               {slide.title}
             </h1>
           ) : (
-            <p className="display-title animate-fade-up mt-6 text-[clamp(2.3rem,min(6.4vw,8.2vh),6.2rem)] text-white" style={{ animationDelay: "200ms" }}>
+            <p className={cn("display-title animate-fade-up mt-6 text-white", framed ? "text-[clamp(2.3rem,min(5vw,8.2vh),5rem)]" : "text-[clamp(2.3rem,min(6.4vw,8.2vh),6.2rem)]")} style={{ animationDelay: "200ms" }}>
               {slide.title}
             </p>
           )}
@@ -239,7 +259,7 @@ export function HeroCarousel(props: Props) {
 
       {/* Controls */}
       {count > 1 && (
-        <div className="absolute right-24 bottom-8 left-5 flex items-center justify-between gap-4 sm:right-5 md:right-10 md:bottom-10 md:left-auto md:justify-end md:gap-6">
+        <div className="absolute right-32 bottom-8 left-5 flex items-center justify-between gap-4 md:right-28 md:bottom-9 md:left-auto md:justify-end md:gap-6">
           <div className="flex items-center gap-2" role="tablist" aria-label="Choose slide">
             {slides.map((s, i) => (
               <button

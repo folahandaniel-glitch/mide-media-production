@@ -15,6 +15,13 @@
       "when": 1790697291680,
       "tag": "0001_admin_tasks",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791144296277,
+      "tag": "0002_hero_layout",
+      "breakpoints": true
     }
   ]
 }

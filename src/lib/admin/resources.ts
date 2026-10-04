@@ -143,6 +143,8 @@ export const CUSTOM_SECTION_TYPES: Option[] = [
   { value: "faq", label: "FAQ" },
   { value: "cta", label: "Contact CTA" },
   { value: "stats", label: "Statistics" },
+  { value: "steps", label: "Process / How it works (numbered steps)" },
+  { value: "ticker", label: "Scrolling ticker (keywords strip)" },
   { value: "announcement", label: "Announcement" },
   { value: "html", label: "Custom HTML (sanitised)" },
   { value: "portfolio", label: "Portfolio grid" },
@@ -200,6 +202,17 @@ export const resources = {
       { name: "subtitle", label: "Supporting text", type: "textarea", max: 500 },
       { name: "image", label: "Background image", type: "image", help: "Landscape, at least 1920px wide." },
       { name: "imageAlt", label: "Image description (alt text)", type: "text", max: 200 },
+      {
+        name: "layout",
+        label: "Image layout",
+        type: "select",
+        options: [
+          { value: "full", label: "Full-screen background (large landscape photos, 1920px+)" },
+          { value: "framed", label: "Framed photo over blurred backdrop (portrait or smaller photos)" },
+        ],
+        default: "full",
+        help: "Choose “Framed” for phone or Instagram photos so they stay sharp.",
+      },
       {
         name: "video",
         label: "Background video (optional, muted MP4)",
@@ -338,6 +351,25 @@ export const resources = {
           { name: "value", label: "Value (e.g. 120+)", type: "text", max: 20 },
           { name: "label", label: "Label", type: "text", max: 80 },
         ],
+      },
+      {
+        name: "stepItems",
+        label: "Steps",
+        type: "repeater",
+        inData: true,
+        showIf: { field: "type", in: ["steps"] },
+        subfields: [
+          { name: "title", label: "Step title", type: "text", max: 80 },
+          { name: "text", label: "Description", type: "textarea", max: 400 },
+        ],
+      },
+      {
+        name: "tickerItems",
+        label: "Words / phrases",
+        type: "repeater",
+        inData: true,
+        showIf: { field: "type", in: ["ticker"] },
+        subfields: [{ name: "text", label: "Text", type: "text", max: 60 }],
       },
       {
         name: "galleryItems",

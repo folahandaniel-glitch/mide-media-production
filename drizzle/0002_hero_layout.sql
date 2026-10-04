@@ -1,0 +1,1 @@
+ALTER TABLE `hero_slides` ADD `layout` text DEFAULT 'full' NOT NULL;

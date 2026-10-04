@@ -48,6 +48,8 @@ export const heroSlides = sqliteTable("hero_slides", {
   image: text("image").notNull().default(""),
   imageAlt: text("image_alt").notNull().default(""),
   video: text("video").notNull().default(""),
+  /** "full" = edge-to-edge background; "framed" = photo in a frame over a blurred backdrop. */
+  layout: text("layout").notNull().default("full"),
   sortOrder: sortOrder(),
   published: bool("published", true),
   createdAt: createdAt(),

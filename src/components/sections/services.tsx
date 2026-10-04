@@ -64,9 +64,9 @@ export function ServicesList({
         </article>
       )}
 
-      <ul className="grid gap-px overflow-hidden rounded-3xl border border-white/10 bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid overflow-hidden rounded-3xl border border-white/10 bg-ink sm:grid-cols-2 lg:grid-cols-3">
         {rest.map((s, i) => (
-          <li key={s.id} className="reveal bg-ink" style={{ ["--reveal-delay" as string]: `${(i % 3) * 90}ms` }}>
+          <li key={s.id} className="reveal bg-ink [box-shadow:0_0_0_0.5px_rgba(255,255,255,0.1)]" style={{ ["--reveal-delay" as string]: `${(i % 3) * 90}ms` }}>
             <article className="group relative flex h-full flex-col p-7 transition-colors duration-500 hover:bg-charcoal md:p-9">
               <div className="flex items-start justify-between">
                 <span className="grid h-12 w-12 place-items-center rounded-xl border border-white/10 text-brand transition-all duration-500 group-hover:border-brand group-hover:bg-brand group-hover:text-black">

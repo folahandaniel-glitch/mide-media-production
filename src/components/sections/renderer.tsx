@@ -47,7 +47,7 @@ export function SectionRenderer({ ctx }: { ctx: Ctx }) {
   return (
     <>
       {ctx.data.sections.map((section) => {
-        const index = section.type === "hero" ? undefined : ++n;
+        const index = section.type === "hero" || section.type === "ticker" ? undefined : ++n;
         return (
           <div key={section.id} className={cn(ctx.preview && (section.status === "draft" || !section.visible) && "relative outline-2 outline-dashed outline-brand/70")}>
             {ctx.preview && (section.status === "draft" || !section.visible) && (
@@ -243,9 +243,11 @@ function Section({ section, index, ctx }: { section: SectionWithData; index?: nu
     case "showcase":
       return (
         <SectionShell section={section} index={index} padded={false} className="grain">
-          <div className="relative flex min-h-[80svh] items-center py-28">
-            {section.image && (
+          <div className={cn("relative flex items-center py-28", section.image ? "min-h-[80svh]" : "min-h-[56svh]")}>
+            {section.image ? (
               <SmartImage src={section.image} alt={section.imageAlt} fill sizes="100vw" className="-z-20 object-cover" />
+            ) : (
+              <div className="light-leak absolute inset-0 -z-20" aria-hidden="true" />
             )}
             <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/90 via-black/55 to-black/15" aria-hidden="true" />
             <div className="vignette absolute inset-0 -z-10" aria-hidden="true" />
@@ -274,6 +276,7 @@ function Section({ section, index, ctx }: { section: SectionWithData; index?: nu
               )}
             </div>
           </div>
+          {data.instagram.length >= 4 && <FilmStrip images={data.instagram.slice(0, 12).map((p) => p.image)} />}
         </SectionShell>
       );
 
@@ -461,6 +464,67 @@ function Section({ section, index, ctx }: { section: SectionWithData; index?: nu
                 whatsappMessage={s.whatsapp.contactMessage}
               />
             </div>
+          </div>
+        </SectionShell>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    case "ticker": {
+      const words = items(section, "tickerItems").map((t) => t.text).filter(Boolean);
+      if (!words.length) return null;
+      return (
+        <section id={sectionAnchor(section)} aria-label={section.title || "What we cover"} className="relative overflow-hidden border-y border-white/10 bg-night py-5">
+          <ul className="sr-only">
+            {words.map((w) => (
+              <li key={w}>{w}</li>
+            ))}
+          </ul>
+          <div className="animate-marquee flex w-max items-center gap-10 whitespace-nowrap" aria-hidden="true">
+            {[...words, ...words, ...words, ...words].map((w, i) => (
+              <span key={i} className="flex items-center gap-10 font-display text-sm font-semibold tracking-[0.3em] text-white/85 uppercase md:text-base">
+                {w}
+                <svg viewBox="0 0 24 24" className="h-4 w-4 text-brand" fill="currentColor">
+                  <path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" />
+                </svg>
+              </span>
+            ))}
+          </div>
+        </section>
+      );
+    }
+
+    /* ------------------------------------------------------------------ */
+    case "steps": {
+      const steps = items(section, "stepItems").filter((x) => x.title);
+      return (
+        <SectionShell section={section} index={index}>
+          <div className="container-cinema">
+            <SectionHeading section={section} index={index} align="center" />
+            <ol className="relative grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+              <span className="absolute top-9 right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-transparent via-brand/50 to-transparent lg:block" aria-hidden="true" />
+              {steps.map((st, i) => (
+                <li
+                  key={i}
+                  className="reveal relative rounded-3xl border border-white/10 bg-white/[0.025] p-7 transition-colors duration-500 hover:border-brand/50"
+                  style={{ ["--reveal-delay" as string]: `${i * 110}ms` }}
+                >
+                  <span className="relative grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full border border-brand/40 bg-ink font-display text-xl font-bold text-brand">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <h3 className={cn("mt-6 font-display text-lg font-semibold", light ? "text-neutral-900" : "text-white")}>{st.title}</h3>
+                  <p className={cn("mt-3 text-[0.95rem] leading-relaxed", light ? "text-neutral-600" : "text-white/60")}>{st.text}</p>
+                </li>
+              ))}
+            </ol>
+            {section.buttonText && (
+              <div className="reveal mt-12 flex flex-wrap justify-center gap-3">
+                <SectionButton text={section.buttonText} url={section.buttonUrl || "/#contact"} />
+                <a href={whatsappLink(s.site.whatsappNumber, s.whatsapp.defaultMessage)} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
+                  <WhatsAppIcon className="h-4 w-4" /> Chat on WhatsApp
+                </a>
+              </div>
+            )}
           </div>
         </SectionShell>
       );
@@ -666,4 +730,26 @@ function Section({ section, index, ctx }: { section: SectionWithData; index?: nu
     default:
       return null;
   }
+}
+
+/** A moving strip of film frames showing recent work. Decorative — the same photos are in the Instagram section. */
+function FilmStrip({ images }: { images: string[] }) {
+  const holes = "h-3 bg-[radial-gradient(circle,rgba(255,255,255,0.55)_2.5px,transparent_3px)] [background-size:22px_12px]";
+  return (
+    <div className="relative -mt-4 overflow-hidden bg-black pb-10" aria-hidden="true">
+      <div className="animate-marquee flex w-max [animation-duration:60s]">
+        {[...images, ...images].map((src, i) => (
+          <div key={i} className="w-40 shrink-0 bg-[#0d0d0e] px-1.5 md:w-52">
+            <div className={holes} />
+            <div className="relative my-1.5 aspect-[3/4] overflow-hidden rounded-sm">
+              <SmartImage src={src} alt="" fill sizes="208px" className="object-cover" />
+            </div>
+            <div className={holes} />
+          </div>
+        ))}
+      </div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-black to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-black to-transparent" />
+    </div>
+  );
 }

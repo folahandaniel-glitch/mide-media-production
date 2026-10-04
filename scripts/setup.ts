@@ -10,6 +10,7 @@ import { drizzle } from "drizzle-orm/libsql";
 import { migrate } from "drizzle-orm/libsql/migrator";
 import * as schema from "../src/db/schema";
 import { seedDatabase } from "../src/db/seed";
+import { applyInstagramContent } from "./instagram-content";
 
 for (const file of [".env.local", ".env"]) {
   if (existsSync(file)) {
@@ -98,6 +99,9 @@ async function applyContentMigrations(db: ReturnType<typeof drizzle<typeof schem
     const seo = await read("seo");
     if (seo && !seo.ogImage) await write("seo", { ...seo, ogImage: "/brand/og.jpg" });
   });
+
+  // Real work from the public @midemediaproduction Instagram replaces untouched stock placeholders.
+  await run("2026-10-instagram-content", () => applyInstagramContent(db));
 }
 
 main().catch((err) => {

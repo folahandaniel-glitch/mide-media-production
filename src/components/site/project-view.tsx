@@ -29,10 +29,11 @@ export function ProjectView({ data, chrome, basePath = "/portfolio" }: { data: D
     <article>
       {/* Hero */}
       <header className="grain relative isolate flex min-h-[78svh] items-end overflow-hidden bg-black">
-        {p.coverImage && <SmartImage src={p.coverImage} alt={p.coverAlt || p.title} fill preload sizes="100vw" className="animate-kenburns -z-20 object-cover" />}
+        {p.coverImage && <SmartImage src={p.coverImage} alt="" fill preload sizes="100vw" quality={60} className="-z-20 scale-110 object-cover opacity-60 blur-2xl" />}
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-ink via-black/50 to-black/40" />
         <div className="vignette absolute inset-0 -z-10" />
-        <div className="container-cinema pt-40 pb-16 md:pb-20">
+        <div className="container-cinema grid items-end gap-10 pt-36 pb-16 md:pb-20 lg:grid-cols-[minmax(0,1fr)_auto] lg:gap-16">
+          <div>
           <Link href={basePath} className="inline-flex items-center gap-2 font-display text-xs tracking-[0.25em] text-white/70 uppercase hover:text-brand">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" /> All projects
           </Link>
@@ -42,8 +43,15 @@ export function ProjectView({ data, chrome, basePath = "/portfolio" }: { data: D
               <span className="rounded-full border border-white/25 px-3 py-1 font-display text-[0.62rem] tracking-[0.2em] text-white/80 uppercase">Sample project</span>
             )}
           </div>
-          <h1 className="display-title animate-fade-up mt-5 max-w-5xl text-[clamp(2.6rem,7vw,6rem)] text-white">{p.title}</h1>
+          <h1 className="display-title animate-fade-up mt-5 max-w-4xl text-[clamp(2.4rem,5.6vw,5rem)] text-white">{p.title}</h1>
           {p.projectType && <p className="mt-5 text-lg text-white/70">{p.projectType}</p>}
+          </div>
+          {p.coverImage && (
+            <div className="animate-fade-up relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-[1.75rem] shadow-[0_40px_120px_-20px_rgba(0,0,0,0.95)] ring-1 ring-white/15 lg:order-last lg:w-[340px] xl:w-[380px]" style={{ animationDelay: "150ms" }}>
+              <SmartImage src={p.coverImage} alt={p.coverAlt || p.title} fill preload sizes="(min-width: 1024px) 380px, 90vw" quality={85} className="object-cover" />
+              <ViewfinderCorners className="inset-4" />
+            </div>
+          )}
         </div>
       </header>
 
@@ -127,7 +135,7 @@ export function ProjectView({ data, chrome, basePath = "/portfolio" }: { data: D
             <ul className="mt-10 grid gap-4 md:grid-cols-3">
               {related.map((r) => (
                 <li key={r.slug}>
-                  <Link href={`${basePath}/${r.slug}`} className="group relative block aspect-[16/10] overflow-hidden rounded-2xl bg-charcoal">
+                  <Link href={`${basePath}/${r.slug}`} className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-charcoal">
                     {r.coverImage && (
                       <SmartImage src={r.coverImage} alt="" fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover transition-transform duration-1000 group-hover:scale-105" />
                     )}

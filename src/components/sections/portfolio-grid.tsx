@@ -18,8 +18,6 @@ export type PortfolioCardData = {
   category: { name: string; slug: string } | null;
 };
 
-const SPANS = ["lg:col-span-7", "lg:col-span-5", "lg:col-span-5", "lg:col-span-7"];
-
 export function PortfolioGrid({
   projects,
   categories,
@@ -68,10 +66,10 @@ export function PortfolioGrid({
       {visible.length === 0 ? (
         <p className="py-16 text-center text-white/55">No projects in this category yet.</p>
       ) : (
-        <ul key={filter} className="grid gap-4 md:grid-cols-2 lg:grid-cols-12 lg:gap-5">
+        <ul key={filter} className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-3">
           {visible.map((p, i) => (
-            <li key={p.id} className={cn("animate-fade-up", SPANS[i % 4])} style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
-              <ProjectCard project={p} href={`${hrefPrefix}/${p.slug}`} priority={i < 2} />
+            <li key={p.id} className="animate-fade-up" style={{ animationDelay: `${Math.min(i, 8) * 70}ms` }}>
+              <ProjectCard project={p} href={`${hrefPrefix}/${p.slug}`} priority={i < 3} />
             </li>
           ))}
         </ul>
@@ -84,24 +82,24 @@ export function ProjectCard({ project: p, href, priority }: { project: Portfolio
   return (
     <Link
       href={href}
-      className="group relative block aspect-[4/3] overflow-hidden rounded-2xl bg-charcoal md:aspect-[16/11] lg:aspect-auto lg:h-[clamp(320px,33vw,500px)]"
+      className="group relative block aspect-[3/4] overflow-hidden rounded-2xl bg-charcoal ring-1 ring-white/[0.06] transition-shadow duration-500 hover:shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--brand)_55%,transparent)] md:aspect-[4/5]"
     >
       {p.coverImage ? (
         <SmartImage
           src={p.coverImage}
           alt={p.coverAlt || p.title}
           fill
-          sizes="(min-width: 1024px) 58vw, (min-width: 768px) 50vw, 100vw"
+          sizes="(min-width: 1024px) 33vw, 50vw"
           loading={priority ? "eager" : "lazy"}
           className="object-cover transition-transform duration-[1.4s] ease-[var(--ease-cinema)] group-hover:scale-[1.07]"
         />
       ) : (
         <div className="light-leak absolute inset-0" aria-hidden="true" />
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent transition-opacity duration-700 group-hover:opacity-90" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/10 to-transparent transition-opacity duration-700 group-hover:opacity-90" />
       <div className="absolute inset-0 bg-brand/0 mix-blend-multiply transition-colors duration-700 group-hover:bg-brand/10" />
 
-      <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+      <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 md:top-4 md:left-4 md:gap-2">
         {p.category && (
           <span className="rounded-full bg-black/55 px-3 py-1 font-display text-[0.62rem] font-semibold tracking-[0.2em] text-white uppercase backdrop-blur">
             {p.category.name}
@@ -114,15 +112,15 @@ export function ProjectCard({ project: p, href, priority }: { project: Portfolio
         )}
       </div>
 
-      <span className="absolute top-4 right-4 grid h-11 w-11 translate-y-2 place-items-center rounded-full bg-brand text-black opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100">
+      <span className="absolute top-4 right-4 hidden h-11 w-11 translate-y-2 md:grid place-items-center rounded-full bg-brand text-black opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:opacity-100">
         <ArrowUpRight className="h-5 w-5" aria-hidden="true" />
       </span>
 
-      <div className="absolute inset-x-0 bottom-0 p-5 md:p-7">
-        {p.projectType && <p className="font-display text-[0.68rem] tracking-[0.25em] text-brand uppercase">{p.projectType}</p>}
-        <h3 className="mt-2 font-display text-xl font-semibold text-white md:text-2xl">{p.title}</h3>
+      <div className="absolute inset-x-0 bottom-0 p-3.5 md:p-6">
+        {p.projectType && <p className="font-display text-[0.56rem] tracking-[0.2em] text-brand uppercase md:text-[0.68rem] md:tracking-[0.25em]">{p.projectType}</p>}
+        <h3 className="mt-1.5 font-display text-sm leading-snug font-semibold text-white md:mt-2 md:text-xl">{p.title}</h3>
         {p.summary && (
-          <p className="mt-2 line-clamp-2 max-w-lg text-sm text-white/65 transition-all duration-500 md:max-h-0 md:opacity-0 md:group-hover:max-h-16 md:group-hover:opacity-100">
+          <p className="mt-2 line-clamp-2 hidden max-w-lg text-sm text-white/70 transition-all duration-500 md:block md:max-h-0 md:opacity-0 md:group-hover:max-h-16 md:group-hover:opacity-100">
             {p.summary}
           </p>
         )}

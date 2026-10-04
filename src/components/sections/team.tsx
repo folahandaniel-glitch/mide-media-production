@@ -16,13 +16,22 @@ export function TeamGrid({ members, teamMessage }: { members: TeamMember[]; team
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-3 md:gap-5 lg:grid-cols-4">
+      {/* Fewer people → larger portraits */}
+      <ul
+        className={cn(
+          "grid gap-3 md:gap-5",
+          members.length === 1 && "mx-auto max-w-sm grid-cols-1",
+          members.length === 2 && "mx-auto max-w-3xl grid-cols-2",
+          members.length === 3 && "grid-cols-2 md:grid-cols-3",
+          members.length >= 4 && "grid-cols-2 lg:grid-cols-4",
+        )}
+      >
         {members.map((m, i) => (
           <li key={m.id} className="reveal" style={{ ["--reveal-delay" as string]: `${(i % 4) * 90}ms` }}>
             <button
               type="button"
               onClick={() => setOpen(m)}
-              className="group relative block aspect-[4/5] w-full overflow-hidden rounded-2xl bg-charcoal text-left"
+              className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl bg-charcoal text-left ring-1 ring-white/10 transition-shadow duration-500 hover:shadow-[0_30px_80px_-30px_color-mix(in_oklab,var(--brand)_60%,transparent)] hover:ring-brand/60"
               aria-label={`View profile: ${m.name}${m.position ? `, ${m.position}` : ""}`}
             >
               {m.photo ? (
@@ -31,7 +40,8 @@ export function TeamGrid({ members, teamMessage }: { members: TeamMember[]; team
                   alt=""
                   fill
                   sizes="(min-width: 1024px) 25vw, 50vw"
-                  className="object-cover grayscale transition-all duration-[1.2s] ease-[var(--ease-cinema)] group-hover:scale-105 group-hover:grayscale-0"
+                  quality={85}
+                  className="object-cover object-top transition-transform duration-[1.2s] ease-[var(--ease-cinema)] group-hover:scale-105"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-b from-graphite to-charcoal">
@@ -42,7 +52,7 @@ export function TeamGrid({ members, teamMessage }: { members: TeamMember[]; team
                   <ApertureMark className="absolute top-5 right-5 h-7 w-7 text-white/20" />
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/90 via-black/45 to-transparent" />
               {m.isPlaceholder && (
                 <span className="absolute top-3 left-3 rounded-full border border-white/20 bg-black/50 px-2.5 py-1 font-display text-[0.58rem] tracking-[0.2em] text-white/75 uppercase backdrop-blur">
                   Profile coming soon
@@ -63,7 +73,7 @@ export function TeamGrid({ members, teamMessage }: { members: TeamMember[]; team
           <div className="grid md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
             <div className="relative aspect-[4/5] bg-charcoal md:aspect-auto md:min-h-[520px]">
               {open.photo ? (
-                <SmartImage src={open.photo} alt={`${open.name}${open.position ? `, ${open.position}` : ""}`} fill sizes="(min-width: 768px) 40vw, 100vw" className="object-cover" />
+                <SmartImage src={open.photo} alt={`${open.name}${open.position ? `, ${open.position}` : ""}`} fill sizes="(min-width: 768px) 40vw, 100vw" quality={85} className="object-cover object-top" />
               ) : (
                 <div className="light-leak absolute inset-0 flex items-center justify-center">
                   <ApertureMark className="h-20 w-20 text-white/25" />
