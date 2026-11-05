@@ -5,6 +5,7 @@ import { SocialIcon, WhatsAppIcon } from "@/components/ui/icon";
 import { telLink, whatsappLink } from "@/lib/utils";
 import type { SiteChrome } from "@/lib/content";
 
+import { FodanCredit } from "@/components/fodan-credit";
 export function Footer({ chrome }: { chrome: SiteChrome }) {
   const { settings, nav, social } = chrome;
   const site = settings.site;
@@ -140,6 +141,7 @@ export function Footer({ chrome }: { chrome: SiteChrome }) {
           </div>
         </div>
       </div>
+      <FodanCredit />
     </footer>
   );
 }
